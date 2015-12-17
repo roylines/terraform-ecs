@@ -1,18 +1,10 @@
-resource "aws_security_group" "cluster" {
-  name = "${var.vpc.name}-cluster-security-group"
-  description = "security group used by clustered instances"
-  vpc_id = "${aws_vpc.vpc.id}" 
-  ingress {
-      from_port = 22
-      to_port = 22
-      protocol = "TCP"
-      cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_ecs_cluster" "cluster" {
+  name = "${var.vpc.name}-cluster"
 }
 
 resource "aws_autoscaling_group" "cluster" {
   name = "${var.vpc.name}-auto-scaling-group"
-  max_size = 1
+  max_size = 2
   min_size = 1
   desired_capacity = 1
   launch_configuration = "${aws_launch_configuration.cluster.name}"
@@ -38,3 +30,4 @@ echo ECS_CLUSTER=${aws_ecs_cluster.cluster.name} >> /etc/ecs/ecs.config
 EOF
     user_data = 
 }
+

@@ -1,6 +1,5 @@
 variable "vpc" {
   default = {
-    name = "ecs-production"
-    tenancy = "default"
+    name = "ecs"
   }
 }

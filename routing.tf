@@ -64,7 +64,7 @@ resource "aws_subnet" "main-1e" {
     Name = "${var.vpc.name}-1e-subnet"
   }
 }
-
+/*
 resource "aws_network_acl" "main" {
   vpc_id = "${aws_vpc.vpc.id}"
     egress {
@@ -89,4 +89,4 @@ resource "aws_network_acl" "main" {
       Name = "${var.vpc.name}-network-acl"
     }
 }
-
+*/

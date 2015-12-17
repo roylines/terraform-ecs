@@ -8,7 +8,7 @@ resource "aws_iam_role" "instance_role" {
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "ecs.amazonaws.com"
+        "Service": "ec2.amazonaws.com"
       },
       "Effect": "Allow"
     }
