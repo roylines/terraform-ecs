@@ -1,0 +1,48 @@
+/* see http://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html */
+resource "aws_iam_role" "instance_role" {
+    name = "${var.vpc.name}-instance-role"
+    assume_role_policy = <<EOF
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ecs.amazonaws.com"
+      },
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_instance_profile" "instance_profile" {
+    name = "${var.vpc.name}-instance-profile"
+    roles = ["${aws_iam_role.instance_role.name}"]
+}
+
+resource "aws_iam_role_policy" "instance_policy" {
+  name = "${var.vpc.name}-instance-role-policy"
+  role     = "${aws_iam_role.instance_role.id}"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:CreateCluster",
+        "ecs:DeregisterContainerInstance",
+        "ecs:DiscoverPollEndpoint",
+        "ecs:Poll",
+        "ecs:RegisterContainerInstance",
+        "ecs:StartTelemetrySession",
+        "ecs:Submit*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
