@@ -4,9 +4,9 @@ resource "aws_ecs_cluster" "cluster" {
 
 resource "aws_autoscaling_group" "cluster" {
   name = "${var.vpc.name}-auto-scaling-group"
-  max_size = 1
+  max_size = 2
   min_size = 1
-  desired_capacity = 1
+  desired_capacity = 2
   launch_configuration = "${aws_launch_configuration.cluster.name}"
   vpc_zone_identifier = ["${aws_subnet.main-1a.id}", "${aws_subnet.main-1b.id}","${aws_subnet.main-1d.id}","${aws_subnet.main-1e.id}"]
 

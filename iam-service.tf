@@ -18,7 +18,7 @@ resource "aws_iam_role" "server_role" {
 EOF
 }
 
-resource "aws_iam_role_policy" "server-policy" {
+resource "aws_iam_role_policy" "server_policy" {
   name = "${var.vpc.name}-server-role-policy"
   role     = "${aws_iam_role.server_role.id}"
   policy = <<EOF
