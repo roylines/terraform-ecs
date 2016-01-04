@@ -4,9 +4,9 @@ resource "aws_ecs_cluster" "cluster" {
 
 resource "aws_autoscaling_group" "cluster" {
   name = "${var.vpc}-auto-scaling-group"
-  max_size = 2
-  min_size = 1
-  desired_capacity = 2
+  max_size = "${var.cluster_max}"
+  min_size = "${var.cluster_min}"
+  desired_capacity = "${var.cluster_desired_size}"
   launch_configuration = "${aws_launch_configuration.cluster.name}"
   vpc_zone_identifier = ["${aws_subnet.main-1a.id}", "${aws_subnet.main-1b.id}","${aws_subnet.main-1d.id}","${aws_subnet.main-1e.id}"]
 
@@ -19,8 +19,8 @@ resource "aws_autoscaling_group" "cluster" {
 
 resource "aws_launch_configuration" "cluster" {
     name_prefix = "${var.vpc}-"
-    image_id = "ami-4fe4852a"
-    instance_type = "t2.nano"
+    image_id = "${var.image_id}"
+    instance_type = "${var.instance_type}"
     iam_instance_profile = "${aws_iam_instance_profile.instance_profile.name}"
     security_groups = ["${aws_security_group.cluster.id}"]
     key_name = "${aws_key_pair.instance.key_name}"
