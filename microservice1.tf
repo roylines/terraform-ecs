@@ -1,6 +1,6 @@
 resource "aws_elb" "micro_1" {
   name = "${var.vpc}-micro-1"
-  subnets = ["${aws_subnet.main-1a.id}", "${aws_subnet.main-1b.id}","${aws_subnet.main-1d.id}","${aws_subnet.main-1e.id}"]
+  subnets = ["${split(",", join(",", aws_subnet.sub.*.id))}"]
   security_groups = ["${aws_security_group.cluster.id}"]
 
   listener {

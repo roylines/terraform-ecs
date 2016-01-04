@@ -3,6 +3,11 @@ variable "region" {
   default = "us-east-1"
 }
 
+variable "availability-zones" {
+  description = "The availability-zones to create"
+  default = "us-east-1a,us-east-1b,us-east-1d,us-east-1e"
+}
+
 variable "instance_type" {
   description = "The EC2 instance type for ECS container instances"
   default = "t2.nano"

@@ -22,71 +22,14 @@ resource "aws_main_route_table_association" "main" {
   route_table_id = "${aws_route_table.main.id}"
 }
 
-resource "aws_subnet" "main-1a" {
-  availability_zone = "us-east-1a"
+resource "aws_subnet" "sub" {
+  count = "${length(split(",", var.availability-zones))}"
+  availability_zone = "${element(split(",", var.availability-zones), count.index)}"
   vpc_id = "${aws_vpc.vpc.id}"
-  cidr_block = "10.0.11.0/24"
+  cidr_block = "10.0.1${count.index}.0/24"
   map_public_ip_on_launch = true
   tags {
-    Name = "${var.vpc}-1a-subnet"
+    Name = "${var.vpc}-${element(split(",", var.availability-zones), count.index)}"
   }
 }
 
-resource "aws_subnet" "main-1b" {
-  availability_zone = "us-east-1b"
-  vpc_id = "${aws_vpc.vpc.id}"
-  cidr_block = "10.0.12.0/24"
-  map_public_ip_on_launch = true
-
-  tags {
-    Name = "${var.vpc}-1b-subnet"
-  }
-}
-
-resource "aws_subnet" "main-1d" {
-  availability_zone = "us-east-1d"
-  vpc_id = "${aws_vpc.vpc.id}"
-  cidr_block = "10.0.13.0/24"
-  map_public_ip_on_launch = true
-
-  tags {
-    Name = "${var.vpc}-1d-subnet"
-  }
-}
-
-resource "aws_subnet" "main-1e" {
-  availability_zone = "us-east-1e"
-  vpc_id = "${aws_vpc.vpc.id}"
-  cidr_block = "10.0.14.0/24"
-  map_public_ip_on_launch = true
-
-  tags {
-    Name = "${var.vpc}-1e-subnet"
-  }
-}
-/*
-resource "aws_network_acl" "main" {
-  vpc_id = "${aws_vpc.vpc.id}"
-    egress {
-        protocol = "tcp"
-        rule_no = 2
-        action = "allow"
-        cidr_block =  "0.0.0.0/0"
-        from_port = 80
-        to_port = 80
-    }
-
-    ingress {
-        protocol = "tcp"
-        rule_no = 1
-        action = "allow"
-        cidr_block =  "0.0.0.0/0"
-        from_port = 22
-        to_port = 22
-    }
-    subnet_ids = ["${aws_subnet.main-1a.id}", "${aws_subnet.main-1b.id}", "${aws_subnet.main-1d.id}", "${aws_subnet.main-1e.id}"]
-    tags {
-      Name = "${var.vpc}-network-acl"
-    }
-}
-*/

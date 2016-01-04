@@ -8,7 +8,7 @@ resource "aws_autoscaling_group" "cluster" {
   min_size = "${var.cluster_min}"
   desired_capacity = "${var.cluster_desired_size}"
   launch_configuration = "${aws_launch_configuration.cluster.name}"
-  vpc_zone_identifier = ["${aws_subnet.main-1a.id}", "${aws_subnet.main-1b.id}","${aws_subnet.main-1d.id}","${aws_subnet.main-1e.id}"]
+  vpc_zone_identifier = ["${split(",", join(",", aws_subnet.sub.*.id))}"]
 
   tag {
     key = "Name"
