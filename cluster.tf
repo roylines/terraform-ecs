@@ -1,9 +1,9 @@
 resource "aws_ecs_cluster" "cluster" {
-  name = "${var.vpc.name}-cluster"
+  name = "${var.vpc}-cluster"
 }
 
 resource "aws_autoscaling_group" "cluster" {
-  name = "${var.vpc.name}-auto-scaling-group"
+  name = "${var.vpc}-auto-scaling-group"
   max_size = 2
   min_size = 1
   desired_capacity = 2
@@ -12,13 +12,13 @@ resource "aws_autoscaling_group" "cluster" {
 
   tag {
     key = "Name"
-    value = "${var.vpc.name}-cluster-instance"
+    value = "${var.vpc}-cluster-instance"
     propagate_at_launch = true
   }
 }
 
 resource "aws_launch_configuration" "cluster" {
-    name_prefix = "${var.vpc.name}-"
+    name_prefix = "${var.vpc}-"
     image_id = "ami-4fe4852a"
     instance_type = "t2.nano"
     iam_instance_profile = "${aws_iam_instance_profile.instance_profile.name}"

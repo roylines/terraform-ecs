@@ -1,7 +1,7 @@
 resource "aws_internet_gateway" "main" {
   vpc_id = "${aws_vpc.vpc.id}"
   tags {
-    Name = "${var.vpc.name}-internet-gateway"
+    Name = "${var.vpc}-internet-gateway"
   }
 }
 
@@ -13,7 +13,7 @@ resource "aws_route_table" "main" {
   }
 
   tags {
-    Name = "${var.vpc.name}-main-route-table"
+    Name = "${var.vpc}-main-route-table"
   }
 }
 
@@ -28,7 +28,7 @@ resource "aws_subnet" "main-1a" {
   cidr_block = "10.0.11.0/24"
   map_public_ip_on_launch = true
   tags {
-    Name = "${var.vpc.name}-1a-subnet"
+    Name = "${var.vpc}-1a-subnet"
   }
 }
 
@@ -39,7 +39,7 @@ resource "aws_subnet" "main-1b" {
   map_public_ip_on_launch = true
 
   tags {
-    Name = "${var.vpc.name}-1b-subnet"
+    Name = "${var.vpc}-1b-subnet"
   }
 }
 
@@ -50,7 +50,7 @@ resource "aws_subnet" "main-1d" {
   map_public_ip_on_launch = true
 
   tags {
-    Name = "${var.vpc.name}-1d-subnet"
+    Name = "${var.vpc}-1d-subnet"
   }
 }
 
@@ -61,7 +61,7 @@ resource "aws_subnet" "main-1e" {
   map_public_ip_on_launch = true
 
   tags {
-    Name = "${var.vpc.name}-1e-subnet"
+    Name = "${var.vpc}-1e-subnet"
   }
 }
 /*
@@ -86,7 +86,7 @@ resource "aws_network_acl" "main" {
     }
     subnet_ids = ["${aws_subnet.main-1a.id}", "${aws_subnet.main-1b.id}", "${aws_subnet.main-1d.id}", "${aws_subnet.main-1e.id}"]
     tags {
-      Name = "${var.vpc.name}-network-acl"
+      Name = "${var.vpc}-network-acl"
     }
 }
 */

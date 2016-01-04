@@ -1,7 +1,7 @@
 /* see http://docs.aws.amazon.com/AmazonECS/latest/developerguide/server_IAM_role.html */
 
 resource "aws_iam_role" "server_role" {
-    name = "${var.vpc.name}-server-role"
+    name = "${var.vpc}-server-role"
     assume_role_policy = <<EOF
 {
   "Version": "2008-10-17",
@@ -19,7 +19,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "server_policy" {
-  name = "${var.vpc.name}-server-role-policy"
+  name = "${var.vpc}-server-role-policy"
   role     = "${aws_iam_role.server_role.id}"
   policy = <<EOF
 {
