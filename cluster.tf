@@ -1,24 +1,24 @@
 resource "aws_ecs_cluster" "cluster" {
-  name = "${var.vpc.name}-cluster"
+  name = "${var.vpc}-cluster"
 }
 
 resource "aws_autoscaling_group" "cluster" {
-  name = "${var.vpc.name}-auto-scaling-group"
+  name = "${var.vpc}-auto-scaling-group"
   max_size = "${var.cluster_max}"
   min_size = "${var.cluster_min}"
   desired_capacity = "${var.cluster_desired_size}"
   launch_configuration = "${aws_launch_configuration.cluster.name}"
-  vpc_zone_identifier = ["${aws_subnet.main-1a.id}", "${aws_subnet.main-1b.id}","${aws_subnet.main-1d.id}","${aws_subnet.main-1e.id}"]
+  vpc_zone_identifier = ["${split(",", join(",", aws_subnet.sub.*.id))}"]
 
   tag {
     key = "Name"
-    value = "${var.vpc.name}-cluster-instance"
+    value = "${var.vpc}-cluster-instance"
     propagate_at_launch = true
   }
 }
 
 resource "aws_launch_configuration" "cluster" {
-    name_prefix = "${var.vpc.name}-"
+    name_prefix = "${var.vpc}-"
     image_id = "${var.image_id}"
     instance_type = "${var.instance_type}"
     iam_instance_profile = "${aws_iam_instance_profile.instance_profile.name}"

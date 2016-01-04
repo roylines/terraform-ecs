@@ -1,6 +1,6 @@
 /* see http://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html */
 resource "aws_iam_role" "instance_role" {
-    name = "${var.vpc.name}-instance-role"
+    name = "${var.vpc}-instance-role"
     assume_role_policy = <<EOF
 {
   "Version": "2008-10-17",
@@ -18,12 +18,12 @@ EOF
 }
 
 resource "aws_iam_instance_profile" "instance_profile" {
-    name = "${var.vpc.name}-instance-profile"
+    name = "${var.vpc}-instance-profile"
     roles = ["${aws_iam_role.instance_role.name}"]
 }
 
 resource "aws_iam_role_policy" "instance_policy" {
-  name = "${var.vpc.name}-instance-role-policy"
+  name = "${var.vpc}-instance-role-policy"
   role     = "${aws_iam_role.instance_role.id}"
   policy = <<EOF
 {

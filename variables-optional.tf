@@ -1,8 +1,12 @@
-variable "vpc" {}
+variable "region" {
+  description = "the region"
+  default = "us-east-1"
+}
 
-variable "domain_name" {}
-
-variable "zone_id" {}
+variable "availability-zones" {
+  description = "The availability-zones to create"
+  default = "us-east-1a,us-east-1b,us-east-1d,us-east-1e"
+}
 
 variable "instance_type" {
   description = "The EC2 instance type for ECS container instances"

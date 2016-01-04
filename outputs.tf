@@ -7,5 +7,5 @@ output "iam_role_arn" {
 }
 
 output "subnet_ids" {
-  value = "${aws_subnet.main-1a.id},${aws_subnet.main-1b.id},${aws_subnet.main-1d.id},${aws_subnet.main-1e.id}"
+  value = "${join(",", aws_subnet.sub.*.id)}"
 }
