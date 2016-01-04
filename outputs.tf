@@ -1,3 +1,7 @@
+output "vpc_id" {
+  value = "${aws_vpc.vpc.id}"
+}
+
 output "ecs_cluster_id" {
   value = "${aws_ecs_cluster.cluster.id}"
 }
