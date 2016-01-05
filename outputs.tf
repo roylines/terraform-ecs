@@ -9,3 +9,7 @@ output "iam_role_arn" {
 output "subnet_ids" {
   value = "${join(",", aws_subnet.sub.*.id)}"
 }
+
+output "microservices" {
+  value = "${join(",", aws_route53_record.microservice.*.name)}"
+}
