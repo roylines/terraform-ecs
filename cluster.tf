@@ -8,7 +8,7 @@ resource "aws_autoscaling_group" "cluster" {
   min_size = "${var.cluster_min}"
   desired_capacity = "${var.cluster_desired_size}"
   launch_configuration = "${aws_launch_configuration.cluster.name}"
-  vpc_zone_identifier = ["${split(",", join(",", aws_subnet.sub.*.id))}"]
+  vpc_zone_identifier = ["${split(",", join(",", aws_subnet.public.*.id))}"]
 
   tag {
     key = "Name"
@@ -28,6 +28,5 @@ resource "aws_launch_configuration" "cluster" {
 #!/bin/bash
 echo ECS_CLUSTER=${aws_ecs_cluster.cluster.name} >> /etc/ecs/ecs.config
 EOF
-    user_data = 
 }
 
