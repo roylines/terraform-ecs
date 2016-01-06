@@ -23,7 +23,7 @@ resource "aws_security_group" "elb" {
 resource "aws_elb" "microservice" {
   count = "${var.microservices_count}"
   name = "${var.vpc}-${lookup(var.microservices_name, count.index)}"
-  subnets = ["${split(",", join(",", aws_subnet.sub.*.id))}"]
+  subnets = ["${split(",", join(",", aws_subnet.public.*.id))}"]
   security_groups = ["${element(aws_security_group.elb.*.id, count.index)}"]
 
   listener {

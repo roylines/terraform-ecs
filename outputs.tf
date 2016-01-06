@@ -11,7 +11,7 @@ output "iam_role_arn" {
 }
 
 output "subnet_ids" {
-  value = "${join(",", aws_subnet.sub.*.id)}"
+  value = "${join(",", aws_subnet.public.*.id)}"
 }
 
 output "microservices" {

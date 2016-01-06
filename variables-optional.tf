@@ -20,12 +20,12 @@ variable "image_id" {
 
 variable "cluster_min" {
   description = "Minimum cluster size"
-  default = 1
+  default = 2
 }
 
 variable "cluster_max" {
   description = "Maximum cluster size"
-  default = 2
+  default = 3
 }
 
 variable "cluster_desired_size" {
