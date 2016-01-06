@@ -1,5 +1,5 @@
 resource "aws_security_group" "cluster" {
-  name = "${var.vpc}-cluster-security-group"
+  name = "${var.vpc}-cluster"
   description = "security group used by clustered instances"
   vpc_id = "${aws_vpc.vpc.id}" 
   ingress {
@@ -14,5 +14,9 @@ resource "aws_security_group" "cluster" {
       protocol = "-1"
       cidr_blocks = ["0.0.0.0/0"]
   }
+  tags {
+    Name = "${var.vpc}-cluster"
+  }
 }
+
 
