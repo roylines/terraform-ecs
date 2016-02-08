@@ -4,7 +4,7 @@ resource "aws_security_group" "cluster" {
   vpc_id = "${aws_vpc.vpc.id}" 
   ingress {
       from_port = 8000 
-      to_port = "${ var.microservices_count + 7999}"
+      to_port = "${ var.microservices_count + 8000}"
       protocol = "TCP"
       cidr_blocks = ["0.0.0.0/0"]
   }
@@ -18,5 +18,3 @@ resource "aws_security_group" "cluster" {
     Name = "${var.vpc}-cluster"
   }
 }
-
-

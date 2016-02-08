@@ -11,9 +11,15 @@ output "iam_role_arn" {
 }
 
 output "subnet_ids" {
-  value = "${join(",", aws_subnet.public.*.id)}"
+ value = "${join(",", aws_subnet.public.*.id)}"
 }
 
+output "api_gateway" {
+  value = "${aws_route53_record.api_gateway.name}"
+}
+
+/*
 output "microservices" {
   value = "${join(",", aws_route53_record.microservice.*.name)}"
 }
+*/

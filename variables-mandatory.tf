@@ -10,6 +10,10 @@ variable "zone_id" {
   description = "the zone_id to use"
 }
 
+variable "api_gateway_image" {
+  description = "the docker image to use for the api gateway"
+}
+
 variable "microservices_count" {
   default = 0
 }

@@ -1,3 +1,4 @@
+/*
 resource "aws_security_group" "elb" {
   count = "${var.microservices_count}"
   name = "${var.vpc}-${lookup(var.microservices_name, count.index)}-elb"
@@ -98,3 +99,4 @@ resource "aws_ecs_service" "microservice" {
     container_port = 80
   }
 }
+*/
