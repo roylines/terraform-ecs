@@ -1,4 +1,26 @@
-resource "aws_security_group" "api_gateway" {
+resource "aws_security_group" "api_gateway_cluster" {
+  name = "${var.vpc}-api-gateway-cluster"
+  description = "security group used by clustered instances for api gateway"
+  vpc_id = "${aws_vpc.vpc.id}" 
+  ingress {
+      from_port = 8000 
+      to_port = 8000
+      protocol = "TCP"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags {
+    Name = "${var.vpc}-api-gateway-cluster"
+  }
+}
+
+
+resource "aws_security_group" "api_gateway_elb" {
   name = "${var.vpc}-api-gateway-elb"
   description = "security group used by elb for api gateway"
   vpc_id = "${aws_vpc.vpc.id}" 
@@ -9,8 +31,8 @@ resource "aws_security_group" "api_gateway" {
       cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
-      from_port = "8000"
-      to_port = "8000"
+      from_port = 8000
+      to_port = 8000
       protocol = "TCP"
       cidr_blocks = ["0.0.0.0/0"]
   }
@@ -22,7 +44,7 @@ resource "aws_security_group" "api_gateway" {
 resource "aws_elb" "api_gateway" {
   name = "${var.vpc}-api-gateway"
   subnets = ["${split(",", join(",", aws_subnet.public.*.id))}"]
-  security_groups = ["${aws_security_group.api_gateway.id}"]
+  security_groups = ["${aws_security_group.api_gateway_elb.id}"]
 
   listener {
     instance_port = "8000"
