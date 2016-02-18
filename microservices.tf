@@ -1,12 +1,10 @@
-/*
-
-resource "aws_security_group" "cluster" {
-  name = "${var.vpc}-cluster"
-  description = "security group used by clustered instances"
+resource "aws_security_group" "microservices" {
+  name = "${var.vpc}-microservices"
+  description = "security group used by clustered instances to allow microservices"
   vpc_id = "${aws_vpc.vpc.id}" 
   ingress {
       from_port = 8001
-      to_port = "${var.microservices_count + 8000}"
+      to_port = "${ var.microservices_count + 8000}"
       protocol = "TCP"
       cidr_blocks = ["0.0.0.0/0"]
   }
@@ -17,7 +15,7 @@ resource "aws_security_group" "cluster" {
       cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
-    Name = "${var.vpc}-cluster"
+    Name = "${var.vpc}-microservices"
   }
 }
 
@@ -33,8 +31,8 @@ resource "aws_security_group" "elb" {
       cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
-      from_port = "${ count.index + 8000 }"
-      to_port = "${ count.index + 8000 }"
+      from_port = "${ count.index + 8001 }"
+      to_port = "${ count.index + 8001 }"
       protocol = "TCP"
       cidr_blocks = ["0.0.0.0/0"]
   }
@@ -50,7 +48,7 @@ resource "aws_elb" "microservice" {
   security_groups = ["${element(aws_security_group.elb.*.id, count.index)}"]
 
   listener {
-    instance_port = "${ count.index + 8000 }"
+    instance_port = "${ count.index + 8001 }"
     instance_protocol = "http"
     lb_port = 80
     lb_protocol = "http"
@@ -64,24 +62,11 @@ resource "aws_elb" "microservice" {
     healthy_threshold = 2
     unhealthy_threshold = 2
     timeout = 3
-    target = "HTTP:${ count.index + 8000 }/"
+    target = "HTTP:${ count.index + 8001 }/"
     interval = 30
   }
   tags {
     Name = "${var.vpc}-${lookup(var.microservices_name, count.index)}"
-  }
-}
-
-resource "aws_route53_record" "microservice" {
-  count = "${var.microservices_count}"
-  zone_id = "${var.zone_id}"
-  name = "${lookup(var.microservices_subdomain, count.index)}.${var.domain_name}"
-  type = "A"
-
-  alias {
-    name = "${element(aws_elb.microservice.*.dns_name, count.index)}"
-    zone_id = "${element(aws_elb.microservice.*.zone_id, count.index)}"
-    evaluate_target_health = false 
   }
 }
 
@@ -93,12 +78,12 @@ resource "aws_ecs_task_definition" "microservice" {
   {
     "name": "${var.vpc}-${lookup(var.microservices_name, count.index)}",
     "image": "${lookup(var.microservices_image, count.index)}",
-    "cpu": 10,
-    "memory": 50,
+    "cpu": ${lookup(var.microservices_cpu, count.index)},
+    "memory": ${lookup(var.microservices_memory, count.index)},
     "portMappings": [
       {
-        "containerPort": 80,
-        "hostPort": ${ count.index + 8000 }
+        "containerPort": ${lookup(var.microservices_port, count.index)},
+        "hostPort": ${ count.index + 8001 }
       }
     ]
   }
@@ -121,4 +106,3 @@ resource "aws_ecs_service" "microservice" {
     container_port = 80
   }
 }
-*/

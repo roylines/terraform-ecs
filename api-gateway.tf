@@ -7,6 +7,7 @@ resource "aws_security_group" "api_gateway_cluster" {
       to_port = 8000
       protocol = "TCP"
       cidr_blocks = ["0.0.0.0/0"]
+      /*cidr_blocks = ["10.0.0.0/16"]*/
   }
   egress {
       from_port = 0

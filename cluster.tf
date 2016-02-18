@@ -22,7 +22,7 @@ resource "aws_launch_configuration" "cluster" {
     image_id = "${var.image_id}"
     instance_type = "${var.instance_type}"
     iam_instance_profile = "${aws_iam_instance_profile.instance_profile.name}"
-    security_groups = ["${aws_security_group.api_gateway_cluster.id}"]
+    security_groups = ["${aws_security_group.api_gateway_cluster.id}", "${aws_security_group.microservices.id}"]
     key_name = "${aws_key_pair.instance.key_name}"
     user_data = <<EOF
 #!/bin/bash
