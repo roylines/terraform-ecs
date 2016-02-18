@@ -32,3 +32,8 @@ variable "cluster_desired_size" {
   description = "Desired cluster size"
   default = 2
 }
+
+variable "api_gateway_desired_count" {
+  description = "the desired number of api gateway containers"
+  default = 2
+}
