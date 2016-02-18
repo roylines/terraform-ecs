@@ -1,26 +1,3 @@
-resource "aws_security_group" "api_gateway_cluster" {
-  name = "${var.vpc}-api-gateway-cluster"
-  description = "security group used by clustered instances for api gateway"
-  vpc_id = "${aws_vpc.vpc.id}" 
-  ingress {
-      from_port = 8000 
-      to_port = 8000
-      protocol = "TCP"
-      cidr_blocks = ["0.0.0.0/0"]
-      /*cidr_blocks = ["10.0.0.0/16"]*/
-  }
-  egress {
-      from_port = 0
-      to_port = 0
-      protocol = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags {
-    Name = "${var.vpc}-api-gateway-cluster"
-  }
-}
-
-
 resource "aws_security_group" "api_gateway_elb" {
   name = "${var.vpc}-api-gateway-elb"
   description = "security group used by elb for api gateway"
@@ -39,6 +16,27 @@ resource "aws_security_group" "api_gateway_elb" {
   }
   tags {
     Name = "${var.vpc}-api-gateway-elb"
+  }
+}
+
+resource "aws_security_group" "api_gateway_cluster" {
+  name = "${var.vpc}-api-gateway-cluster"
+  description = "security group used by clustered instances for api gateway"
+  vpc_id = "${aws_vpc.vpc.id}" 
+  ingress {
+      from_port = 8000 
+      to_port = 8000
+      protocol = "TCP"
+      security_groups = ["${aws_security_group.api_gateway_elb.id}"]
+  }
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags {
+    Name = "${var.vpc}-api-gateway-cluster"
   }
 }
 
