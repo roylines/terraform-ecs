@@ -54,7 +54,8 @@ resource "aws_elb" "microservice" {
     lb_port = 80
     lb_protocol = "http"
   }
-
+  
+  internal = true
   cross_zone_load_balancing = true
   connection_draining = true
   connection_draining_timeout = 400
