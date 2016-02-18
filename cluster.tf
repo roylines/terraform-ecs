@@ -31,9 +31,11 @@ resource "aws_autoscaling_group" "cluster" {
   desired_capacity = "${var.cluster_desired_size}"
   launch_configuration = "${aws_launch_configuration.cluster.name}"
   vpc_zone_identifier = ["${split(",", join(",", aws_subnet.public.*.id))}"]
-  lifecycle {
+/*
+lifecycle {
     create_before_destroy = true
   }
+*/
   tag {
     key = "Name"
     value = "${var.vpc}-cluster-instance"
