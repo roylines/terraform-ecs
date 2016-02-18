@@ -1,25 +1,4 @@
-resource "aws_security_group" "microservices" {
-  name = "${var.vpc}-microservices"
-  description = "security group used by clustered instances to allow microservices"
-  vpc_id = "${aws_vpc.vpc.id}" 
-  ingress {
-      from_port = 8001
-      to_port = "${ var.microservices_count + 8000}"
-      protocol = "TCP"
-      cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-      from_port = 0
-      to_port = 0
-      protocol = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags {
-    Name = "${var.vpc}-microservices"
-  }
-}
-
-resource "aws_security_group" "elb" {
+resource "aws_security_group" "microservices_elb" {
   count = "${var.microservices_count}"
   name = "${var.vpc}-${lookup(var.microservices_name, count.index)}-elb"
   description = "security group used by elb for ${lookup(var.microservices_name, count.index)}"
@@ -41,11 +20,33 @@ resource "aws_security_group" "elb" {
   }
 }
 
+resource "aws_security_group" "microservices" {
+  name = "${var.vpc}-microservices"
+  description = "security group used by clustered instances to allow microservices"
+  vpc_id = "${aws_vpc.vpc.id}" 
+  depends_on = ["aws_security_group.microservices_elb"]
+  ingress {
+      from_port = 8001
+      to_port = "${ var.microservices_count + 8000}"
+      protocol = "TCP"
+      security_groups = ["${element(aws_security_group.microservices_elb.*.id, count.index)}"]
+  }
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags {
+    Name = "${var.vpc}-microservices"
+  }
+}
+
 resource "aws_elb" "microservice" {
   count = "${var.microservices_count}"
   name = "${var.vpc}-${lookup(var.microservices_name, count.index)}"
   subnets = ["${split(",", join(",", aws_subnet.public.*.id))}"]
-  security_groups = ["${element(aws_security_group.elb.*.id, count.index)}"]
+  security_groups = ["${element(aws_security_group.microservices_elb.*.id, count.index)}"]
 
   listener {
     instance_port = "${ count.index + 8001 }"

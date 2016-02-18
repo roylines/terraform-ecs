@@ -23,6 +23,7 @@ resource "aws_security_group" "api_gateway_cluster" {
   name = "${var.vpc}-api-gateway-cluster"
   description = "security group used by clustered instances for api gateway"
   vpc_id = "${aws_vpc.vpc.id}" 
+  depends_on = ["aws_security_group.api_gateway_elb"]
   ingress {
       from_port = 8000 
       to_port = 8000
