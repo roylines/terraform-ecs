@@ -29,7 +29,7 @@ resource "aws_security_group" "microservices" {
       from_port = 8001
       to_port = "${ var.microservices_count + 8000}"
       protocol = "TCP"
-      security_groups = ["${element(aws_security_group.microservices_elb.*.id, count.index)}"]
+      security_groups = ["${aws_security_group.microservices_elb.*.id}"]
   }
   egress {
       from_port = 0
