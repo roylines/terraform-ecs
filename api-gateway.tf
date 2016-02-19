@@ -5,13 +5,13 @@ resource "aws_security_group" "api_gateway_elb" {
   ingress {
       from_port = 80 
       to_port = 80
-      protocol = "TCP"
+      protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
       from_port = 8000
       to_port = 8000
-      protocol = "TCP"
+      protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
@@ -27,7 +27,7 @@ resource "aws_security_group" "api_gateway_cluster" {
   ingress {
       from_port = 8000 
       to_port = 8000
-      protocol = "TCP"
+      protocol = "tcp"
       security_groups = ["${aws_security_group.api_gateway_elb.id}"]
   }
   egress {

@@ -6,11 +6,10 @@ resource "aws_security_group" "cluster" {
   name = "${var.vpc}-cluster"
   description = "security group used by clustered instances"
   vpc_id = "${aws_vpc.vpc.id}" 
-  /* to do - use bastion here */
   ingress {
       from_port = 22 
       to_port = 22
-      protocol = "TCP"
+      protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
@@ -31,11 +30,6 @@ resource "aws_autoscaling_group" "cluster" {
   desired_capacity = "${var.cluster_desired_size}"
   launch_configuration = "${aws_launch_configuration.cluster.name}"
   vpc_zone_identifier = ["${split(",", join(",", aws_subnet.public.*.id))}"]
-/*
-lifecycle {
-    create_before_destroy = true
-  }
-*/
   tag {
     key = "Name"
     value = "${var.vpc}-cluster-instance"
@@ -50,11 +44,9 @@ resource "aws_launch_configuration" "cluster" {
     iam_instance_profile = "${aws_iam_instance_profile.instance_profile.name}"
     security_groups = ["${aws_security_group.cluster.id}", "${aws_security_group.api_gateway_cluster.id}", "${aws_security_group.microservices.id}"]
     key_name = "${aws_key_pair.instance.key_name}"
-    lifecycle {
-      create_before_destroy = true
-    }
     user_data = <<EOF
 #!/bin/bash
 echo ECS_CLUSTER=${aws_ecs_cluster.cluster.name} >> /etc/ecs/ecs.config
+yum -y update --security
 EOF
 }

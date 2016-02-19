@@ -6,13 +6,13 @@ resource "aws_security_group" "microservices_elb" {
   ingress {
       from_port = 80 
       to_port = 80
-      protocol = "TCP"
+      protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
       from_port = "${ count.index + 8001 }"
       to_port = "${ count.index + 8001 }"
-      protocol = "TCP"
+      protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
   }
   tags {
@@ -28,7 +28,7 @@ resource "aws_security_group" "microservices" {
   ingress {
       from_port = 8001
       to_port = "${ var.microservices_count + 8000}"
-      protocol = "TCP"
+      protocol = "tcp"
       security_groups = ["${aws_security_group.microservices_elb.*.id}"]
   }
   egress {
@@ -69,6 +69,29 @@ resource "aws_elb" "microservice" {
   }
   tags {
     Name = "${var.vpc}-${lookup(var.microservices_name, count.index)}"
+  }
+}
+
+resource "aws_route53_zone" "microservices" {
+  name = "${var.vpc}-private"
+  comment = "HostedZone for microservices within ${var.vpc}" 
+  vpc_id = "${aws_vpc.vpc.id}" 
+  tags {
+    Name = "${var.vpc}-private"
+  }
+}
+
+resource "aws_route53_record" "microservices" {
+  count = "${var.microservices_count}"
+  zone_id = "${aws_route53_zone.microservices.id}"
+  name = "${lookup(var.microservices_name, count.index)}"
+  type = "A"
+  depends_on = ["aws_elb.microservice"]
+
+  alias {
+    name = "${element(aws_elb.microservice.*.dns_name, count.index)}"
+    zone_id = "${element(aws_elb.microservice.*.zone_id, count.index)}"
+    evaluate_target_health = false 
   }
 }
 
