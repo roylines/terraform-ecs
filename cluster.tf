@@ -37,6 +37,23 @@ resource "aws_autoscaling_group" "cluster" {
   }
 }
 
+resource "aws_s3_bucket" "ecs_config" {
+    bucket = "${var.vpc}-ecs-config"
+    acl = "private"
+
+    tags {
+        Name = "${var.vpc}-ecs-config"
+    }
+}
+
+resource "aws_s3_bucket_object" "ecs_config" {
+    bucket = "${aws_s3_bucket.ecs_config.id}"
+    key = "ecs.config"
+    content = <<EOF
+ECS_CLUSTER=${aws_ecs_cluster.cluster.name}
+EOF
+}
+
 resource "aws_launch_configuration" "cluster" {
     name_prefix = "${var.vpc}-cluster"
     image_id = "${var.image_id}"
@@ -44,9 +61,11 @@ resource "aws_launch_configuration" "cluster" {
     iam_instance_profile = "${aws_iam_instance_profile.instance_profile.name}"
     security_groups = ["${aws_security_group.cluster.id}", "${aws_security_group.api_gateway_cluster.id}", "${aws_security_group.microservices.id}"]
     key_name = "${aws_key_pair.instance.key_name}"
+    depends_on = ["aws_s3_bucket_object.ecs_config"]
     user_data = <<EOF
 #!/bin/bash
-echo ECS_CLUSTER=${aws_ecs_cluster.cluster.name} >> /etc/ecs/ecs.config
 yum -y update --security
+yum install -y aws-cli
+aws s3 cp s3://${aws_s3_bucket.ecs_config.id}/ecs.config /etc/ecs/ecs.config
 EOF
 }

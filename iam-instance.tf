@@ -17,6 +17,12 @@ resource "aws_iam_role" "instance_role" {
 EOF
 }
 
+resource "aws_iam_policy_attachment" "s3_read_only" {
+    name = "s3-read-only"
+    roles = ["${aws_iam_role.instance_role.name}"]
+    policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+
 resource "aws_iam_instance_profile" "instance_profile" {
     name = "${var.vpc}-instance-profile"
     roles = ["${aws_iam_role.instance_role.name}"]
@@ -38,7 +44,11 @@ resource "aws_iam_role_policy" "instance_policy" {
         "ecs:Poll",
         "ecs:RegisterContainerInstance",
         "ecs:StartTelemetrySession",
-        "ecs:Submit*"
+        "ecs:Submit*",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:GetAuthorizationToken"
       ],
       "Resource": "*"
     }
