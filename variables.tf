@@ -1,6 +1,6 @@
 variable "vpc" {
   description = "the vpc name"
-  default = "robophobe"
+  default = "tf-ecs"
 }
 
 variable "region" {
