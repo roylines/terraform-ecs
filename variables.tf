@@ -1,3 +1,8 @@
+variable "vpc" {
+  description = "the vpc name"
+  default = "robophobe"
+}
+
 variable "region" {
   description = "the region"
   default = "us-east-1"
@@ -33,7 +38,3 @@ variable "cluster_desired_size" {
   default = 2
 }
 
-variable "api_gateway_desired_count" {
-  description = "the desired number of api gateway containers"
-  default = 2
-}
