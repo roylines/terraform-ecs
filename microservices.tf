@@ -1,52 +1,8 @@
-resource "aws_security_group" "microservices_elb" {
-  count = "${var.microservices_count}"
-  name = "${var.vpc}-${lookup(var.microservices_name, count.index)}-elb"
-  description = "security group used by elb for ${lookup(var.microservices_name, count.index)}"
-  vpc_id = "${aws_vpc.vpc.id}" 
-  ingress {
-      from_port = 80 
-      to_port = 80
-      protocol = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-      from_port = "${ count.index + 8001 }"
-      to_port = "${ count.index + 8001 }"
-      protocol = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags {
-    Name = "${var.vpc}-${lookup(var.microservices_name, count.index)}-elb"
-  }
-}
-
-resource "aws_security_group" "microservices" {
-  name = "${var.vpc}-microservices"
-  description = "security group used by clustered instances to allow microservices"
-  vpc_id = "${aws_vpc.vpc.id}" 
-  depends_on = ["aws_security_group.microservices_elb"]
-  ingress {
-      from_port = 8001
-      to_port = "${ var.microservices_count + 8000}"
-      protocol = "tcp"
-      security_groups = ["${aws_security_group.microservices_elb.*.id}"]
-  }
-  egress {
-      from_port = 0
-      to_port = 0
-      protocol = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-  }
-  tags {
-    Name = "${var.vpc}-microservices"
-  }
-}
-
 resource "aws_elb" "microservice" {
   count = "${var.microservices_count}"
   name = "${var.vpc}-${lookup(var.microservices_name, count.index)}"
   subnets = ["${split(",", join(",", aws_subnet.public.*.id))}"]
-  security_groups = ["${element(aws_security_group.microservices_elb.*.id, count.index)}"]
+  security_groups = ["${aws_security_group.microservices_elb.id}"]
 
   listener {
     instance_port = "${ count.index + 8001 }"
@@ -72,26 +28,16 @@ resource "aws_elb" "microservice" {
   }
 }
 
-resource "aws_route53_zone" "microservices" {
-  name = "${var.vpc}-private"
-  comment = "HostedZone for microservices within ${var.vpc}" 
-  vpc_id = "${aws_vpc.vpc.id}" 
-  tags {
-    Name = "${var.vpc}-private"
-  }
-}
-
 resource "aws_route53_record" "microservices" {
   count = "${var.microservices_count}"
   zone_id = "${aws_route53_zone.microservices.id}"
   name = "${lookup(var.microservices_name, count.index)}"
   type = "A"
-  depends_on = ["aws_elb.microservice"]
 
   alias {
     name = "${element(aws_elb.microservice.*.dns_name, count.index)}"
     zone_id = "${element(aws_elb.microservice.*.zone_id, count.index)}"
-    evaluate_target_health = false 
+    evaluate_target_health = "false" 
   }
 }
 
@@ -105,6 +51,7 @@ resource "aws_ecs_task_definition" "microservice" {
     "image": "${lookup(var.microservices_image, count.index)}",
     "cpu": ${lookup(var.microservices_cpu, count.index)},
     "memory": ${lookup(var.microservices_memory, count.index)},
+    "essential": true,
     "portMappings": [
       {
         "containerPort": ${lookup(var.microservices_port, count.index)},
@@ -126,7 +73,7 @@ resource "aws_ecs_service" "microservice" {
   depends_on = ["aws_iam_role_policy.server_policy"]
 
   load_balancer {
-    elb_name = "${element(aws_elb.microservice.*.id, count.index)}"
+    elb_name = "${element(aws_elb.microservice.*.name, count.index)}"
     container_name = "${var.vpc}-${lookup(var.microservices_name, count.index)}"
     container_port = 80
   }
