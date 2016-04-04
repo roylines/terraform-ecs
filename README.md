@@ -1,3 +1,3 @@
 # terraform-ecs
-terraform scripts for an ecs cluster module
+terraform module for creating an ECS cluster 
 
