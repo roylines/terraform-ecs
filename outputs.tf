@@ -7,7 +7,7 @@ output "cluster_id" {
 }
 
 output "private_zone_id" {
-  value = "{aws_route53_zone.microservices.id}"
+  value = "${aws_route53_zone.microservices.zone_id}"
 }
 
 output "iam_role_arn" {
