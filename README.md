@@ -1,14 +1,13 @@
 # terraform-ecs
-A terraform module for creating an ECS cluster. 
-This module can be used to create a new vpc complete with subnets, security groups and instances. 
-There are many [variables](https://github.com/roylines/terraform-ecs/blob/master/variables.tf) that can be set to configure instance size and availability zones.
+Latest release: *v2.0.0*
+
+A terraform module for creating an ECS cluster. There are several [variables](https://github.com/roylines/terraform-ecs/blob/master/variables.tf) that can be set to configure, for example,instance type and availability zones.
 
 # Usage 
-There is a full example of using this module within a microservices architecture [here](https://github.com/roylines/terraform-ecs-example) 
+Instructions for using terraform modules can be found within the [Terraform documentation](https://www.terraform.io/docs/modules/usage.html)
+It is strongly recommended that when using this module, you use versioned links to the repository.
 
-It is strongly recommended that you version your module sources. The latest stable version of this module is *v2.0.0*
-
-The following minimal terraform templat example will create the cluster using the supplied ssh public key.
+The following minimal terraform template example will create the cluster using the supplied ssh public key.
 
 ```
 variable "ssh_public_key" {
@@ -20,3 +19,5 @@ module "ecs" {
   ssh_public_key = "${var.ssh_public_key}"
 }
 ```
+
+A more complex example can be found at [https://github.com/roylines/terraform-ecs-example](https://github.com/roylines/terraform-ecs-example) 
