@@ -19,8 +19,8 @@ variable "instance_type" {
 }
 
 variable "image_id" {
-  description = "The AMI to use for ECS container instances"
-  default = "ami-4fe4852a"
+  description = "The AMI to use for ECS container instances, see http://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html"
+  default = "ami-67a3a90d"
 }
 
 variable "cluster_min" {
