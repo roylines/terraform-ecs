@@ -1,5 +1,5 @@
 # terraform-ecs
-Latest release: *v2.0.0*
+Latest release: *v2.0.1*
 
 A terraform module for creating an ECS cluster. There are several [variables](https://github.com/roylines/terraform-ecs/blob/master/variables.tf) that can be set to configure, for example,instance type and availability zones.
 
