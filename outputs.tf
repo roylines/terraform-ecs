@@ -11,6 +11,5 @@ output "private_zone_id" {
 }
 
 output "subnets" {
- value = "${join(",", aws_subnet.public.*.id)}"
+  value = "${join(",", aws_subnet.public.*.id)}"
 }
-
