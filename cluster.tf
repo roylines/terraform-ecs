@@ -37,23 +37,6 @@ resource "aws_autoscaling_group" "cluster" {
   }
 }
 
-resource "aws_s3_bucket" "ecs_config" {
-    bucket = "${var.vpc}-ecs-config"
-    acl = "private"
-
-    tags {
-        Name = "${var.vpc}-ecs-config"
-    }
-}
-
-resource "aws_s3_bucket_object" "ecs_config" {
-    bucket = "${aws_s3_bucket.ecs_config.id}"
-    key = "ecs.config"
-    content = <<EOF
-ECS_CLUSTER=${aws_ecs_cluster.cluster.name}
-EOF
-}
-
 resource "aws_launch_configuration" "cluster" {
     name_prefix = "${var.vpc}-cluster"
     image_id = "${var.image_id}"
@@ -61,11 +44,25 @@ resource "aws_launch_configuration" "cluster" {
     iam_instance_profile = "${aws_iam_instance_profile.instance_profile.name}"
     security_groups = ["${aws_security_group.cluster.id}", "${aws_security_group.microservices.id}"]
     key_name = "${aws_key_pair.instance.key_name}"
-    depends_on = ["aws_s3_bucket_object.ecs_config"]
+    depends_on = ["aws_s3_bucket_object.ecs_config", "aws_s3_bucket_object.awslogs_conf"]
     user_data = <<EOF
 #!/bin/bash
 yum -y update --security
-yum install -y aws-cli
+yum install -y aws-cli awslogs jq
+
+# copy configurations
 aws s3 cp s3://${aws_s3_bucket.ecs_config.id}/ecs.config /etc/ecs/ecs.config
+aws s3 cp s3://${aws_s3_bucket.ecs_config.id}/awslogs.conf /etc/awslogs/awslogs.conf
+
+# substitute container id 
+sed -i -e "s/{container_instance_id}/$HOSTNAME/g" /etc/awslogs/awslogs.conf
+
+# substitute region 
+region=$(curl 169.254.169.254/latest/meta-data/placement/availability-zone | sed s'/.$//')
+sed -i -e "s/region = us-east-1/region = $region/g" /etc/awslogs/awscli.conf
+
+# start aws logs 
+service awslogs start
+chkconfig awslogs on
 EOF
 }
