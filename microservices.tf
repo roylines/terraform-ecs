@@ -3,8 +3,8 @@ resource "aws_security_group" "microservices" {
   description = "security group used by clustered instances to allow microservices"
   vpc_id = "${aws_vpc.vpc.id}" 
   ingress {
-      from_port = 8000
-      to_port = 9000
+      from_port = "${var.from_port}" 
+      to_port = "${var.to_port}"
       protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
   }

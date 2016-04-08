@@ -38,6 +38,17 @@ variable "cluster_desired_size" {
   default = 2
 }
 
+variable "from_port" {
+  description = "the ingress from port range"
+  default = 8000
+}
+
+variable "to_port" {
+  description = "the ingress to port range"
+  default = 8010
+}
+
 variable "ssh_public_key" {
   description = "public key to allow ssh to cluster instances"
 }
+
