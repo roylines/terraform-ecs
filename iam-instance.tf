@@ -43,6 +43,7 @@ resource "aws_iam_role_policy" "instance_policy" {
         "ecs:DiscoverPollEndpoint",
         "ecs:Poll",
         "ecs:RegisterContainerInstance",
+        "ecs:StartTask",
         "ecs:StartTelemetrySession",
         "ecs:Submit*"
       ],
