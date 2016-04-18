@@ -48,7 +48,11 @@ variable "to_port" {
   default = 8010
 }
 
+variable "newrelic_license_key" {
+  description = "new relic license key"
+  default = "none"
+}
+
 variable "ssh_public_key" {
   description = "public key to allow ssh to cluster instances"
 }
-

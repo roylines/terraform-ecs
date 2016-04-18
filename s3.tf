@@ -20,8 +20,13 @@ resource "aws_s3_bucket_object" "awslogs_conf" {
     key = "awslogs.conf"
     content = <<EOF
 [general]
-state_file = /var/lib/awslogs/agent-state        
- 
+state_file = /var/lib/awslogs/agent-state
+        
+[/var/log/newrelic/nrsysmond.log] 
+file = /var/log/newrelic/nrsysmond.log
+log_group_name = ${aws_cloudwatch_log_group.cluster.name}
+log_stream_name = {container_instance_id}/var/log/newrelic/nrsysmond.log
+
 [/var/log/dmesg]
 file = /var/log/dmesg
 log_group_name = ${aws_cloudwatch_log_group.cluster.name}
