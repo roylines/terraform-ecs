@@ -18,6 +18,11 @@ sed -i -e "s/region = us-east-1/region = $region/g" /etc/awslogs/awscli.conf
 service awslogs start
 chkconfig awslogs on
 
+# install aws inspector agent
+wget https://d1wk0tztpsntt1.cloudfront.net/linux/latest/install
+bash ./install
+/etc/init.d/awsagent start
+
 # configure and start new relic server monitoring 
 if ["${newrelic_license_key}" = "none" ]; then
   echo "no newrelic key set, skipping"

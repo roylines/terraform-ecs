@@ -35,6 +35,11 @@ resource "aws_autoscaling_group" "cluster" {
     value = "${var.vpc}-cluster-instance"
     propagate_at_launch = true
   }
+  tag {
+    key = "Inspector"
+    value = "${var.vpc}"
+    propagate_at_launch = true
+  }
 }
 
 resource "template_file" "user_data" {
