@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-yum install -y aws-cli awslogs jq wget
+yum install -y aws-cli awslogs jq wget kernel-devel-$(uname -r)
 
 # copy configurations
 aws s3 cp s3://${bucket_id}/ecs.config /etc/ecs/ecs.config
