@@ -7,11 +7,13 @@ resource "aws_s3_bucket" "ecs_config" {
     }
 }
 
+// https://aws.amazon.com/blogs/compute/optimizing-disk-usage-on-amazon-ecs/
 resource "aws_s3_bucket_object" "ecs_config" {
     bucket = "${aws_s3_bucket.ecs_config.id}"
     key = "ecs.config"
     content = <<EOF
 ECS_CLUSTER=${aws_ecs_cluster.cluster.name}
+ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=10m
 EOF
 }
 
