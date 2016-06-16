@@ -43,6 +43,21 @@ resource "template_file" "user_data" {
     vpc = "${var.vpc}"
     bucket_id = "${aws_s3_bucket.ecs_config.id}"
     newrelic_license_key = "${var.newrelic_license_key}"
+    ruxit_account = "${var.ruxit_account}"
+    ruxit_token = "${var.ruxit_token}"
+  }
+}
+
+resource "aws_s3_bucket_object" "ecs_userdata" {
+  bucket = "${aws_s3_bucket.ecs_config.id}"
+  key = "userdata.sh"
+  content = "${template_file.user_data.rendered}"
+}
+
+resource "template_file" "user_data_bootstrap" {
+  template = "${file("${path.module}/user-data-bootstrap.sh")}"
+  vars {
+    bucket_id = "${aws_s3_bucket.ecs_config.id}"
   }
 }
 
@@ -53,6 +68,6 @@ resource "aws_launch_configuration" "cluster" {
     iam_instance_profile = "${aws_iam_instance_profile.instance_profile.name}"
     security_groups = ["${aws_security_group.cluster.id}", "${aws_security_group.microservices.id}"]
     key_name = "${aws_key_pair.instance.key_name}"
-    depends_on = ["aws_s3_bucket_object.ecs_config", "aws_s3_bucket_object.awslogs_conf"]
-    user_data = "${template_file.user_data.rendered}" 
+    depends_on = ["aws_s3_bucket_object.ecs_userdata", "aws_s3_bucket_object.ecs_config", "aws_s3_bucket_object.awslogs_conf"]
+    user_data = "${template_file.user_data_bootstrap.rendered}"
 }

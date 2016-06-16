@@ -49,7 +49,17 @@ variable "to_port" {
 }
 
 variable "newrelic_license_key" {
-  description = "new relic license key"
+  description = "new relic license key (only needed for newrelic support)"
+  default = "none"
+}
+
+variable "ruxit_account" {
+  description = "the ruxit account number (only needed for ruxit support)"
+  default = "none"
+}
+
+variable "ruxit_token" {
+  description = "the ruxit token (only needed for ruxit support)"
   default = "none"
 }
 
