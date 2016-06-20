@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-yum install -y aws-cli awslogs jq wget kernel-devel-$(uname -r)
+yum install -y aws-cli awslogs jq wget
 
 # copy configurations
 aws s3 cp s3://${bucket_id}/ecs.config /etc/ecs/ecs.config
@@ -41,5 +41,17 @@ else
   wget -O ruxit-agent-install.sh https://${ruxit_account}.live.ruxit.com/installer/agent/unix/latest/${ruxit_token}
   chmod u+x ./ruxit-agent-install.sh
   ./ruxit-agent-install.sh
+  popd
+fi
+
+# configure and start sysdig monitoring (docker version not available in ECS) 
+if [ "${sysdig_access_key}" = "none" ]; then
+  echo "no sysdig key set, skipping"
+else
+  echo "configuring sysdig"
+  pushd /usr/local/src
+  wget -O sysdig-agent-install.sh https://s3.amazonaws.com/download.draios.com/stable/install-agent
+  chmod u+x ./sysdig-agent-install.sh
+  ./sysdig-agent-install.sh --access_key ${sysdig_access_key} --tags "instanceid:$instanceId" 
   popd
 fi

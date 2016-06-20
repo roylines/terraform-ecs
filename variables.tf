@@ -63,6 +63,11 @@ variable "ruxit_token" {
   default = "none"
 }
 
+variable "sysdig_access_key" {
+  description = "the sysdig access key (only needed for sysdig support)"
+  default = "none"
+}
+
 variable "ssh_public_key" {
   description = "public key to allow ssh to cluster instances"
 }

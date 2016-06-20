@@ -45,6 +45,7 @@ resource "template_file" "user_data" {
     newrelic_license_key = "${var.newrelic_license_key}"
     ruxit_account = "${var.ruxit_account}"
     ruxit_token = "${var.ruxit_token}"
+    sysdig_access_key = "${var.sysdig_access_key}"
   }
 }
 
