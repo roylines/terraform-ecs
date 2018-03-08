@@ -1,7 +1,7 @@
 resource "aws_internet_gateway" "main" {
   vpc_id = "${aws_vpc.vpc.id}"
   tags {
-    Name = "${var.vpc}-internet-gateway"
+    Name = "${local.namespace}"
   }
 }
 
@@ -13,7 +13,7 @@ resource "aws_route_table" "public" {
   }
 
   tags {
-    Name = "${var.vpc}-public"
+    Name = "${local.namespace}"
   }
 }
 
@@ -22,13 +22,17 @@ resource "aws_main_route_table_association" "main" {
   route_table_id = "${aws_route_table.public.id}"
 }
 
+data "aws_availability_zones" "available" {
+}
+
 resource "aws_subnet" "public" {
-  count = "${length(split(",", var.availability-zones))}"
-  availability_zone = "${element(split(",", var.availability-zones), count.index)}"
+  count = "${length(data.aws_availability_zones.available.names)}"
+  availability_zone = "${element(data.aws_availability_zones.available.names, count.index)}"
   vpc_id = "${aws_vpc.vpc.id}"
   cidr_block = "10.0.2${count.index}.0/24"
   map_public_ip_on_launch = true 
   tags {
-    Name = "${var.vpc}-${element(split(",", var.availability-zones), count.index)}"
+    Name = "${local.namespace}-${count.index}"
   }
 }
+

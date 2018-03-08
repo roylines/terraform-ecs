@@ -1,6 +1,11 @@
-variable "vpc" {
-  description = "the vpc name"
-  default = "tf-ecs"
+variable "environment" {
+  description = "the environment"
+  default = "prod"
+}
+
+variable "name" {
+  description = "the name of this cluster"
+  default = "ecs"
 }
 
 variable "region" {
@@ -8,19 +13,8 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "availability-zones" {
-  description = "The availability-zones to create"
-  default = "us-east-1a,us-east-1b,us-east-1d,us-east-1e"
-}
-
-variable "instance_type" {
-  description = "The EC2 instance type for ECS container instances"
-  default = "t2.nano"
-}
-
-variable "image_id" {
-  description = "The AMI to use for ECS container instances, see http://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html"
-  default = "ami-67a3a90d"
+variable "ssh_public_key" {
+  description = "public key to allow ssh to cluster instances"
 }
 
 variable "cluster_min" {
@@ -38,6 +32,40 @@ variable "cluster_desired_size" {
   default = 2
 }
 
+variable "instance_type" {
+  description = "The EC2 instance type for ECS container instances"
+  default = "t2.nano"
+}
+
+variable "image_id" {
+  description = "The AMI to use for ECS container instances, see http://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html"
+  default = "ami-a7a242da"
+}
+
+variable "asg_names" {
+  default = ["a", "b"]
+}
+
+variable "asg_sizes" {
+  description = "Minimum cluster size"
+  default = [2, 0]
+}
+
+variable "asg_instance_types" {
+  description = "The EC2 instance type for ECS container instances"
+  default = ["t2.nano", "t2.nano"]
+}
+
+variable "asg_image_ids" {
+  description = "The AMI to use for ECS container instances, see http://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html"
+  default = ["ami-a7a242da", "ami-a7a242da"]
+}
+
+locals {
+  namespace = "${var.environment}-${var.name}"
+}
+
+/*
 variable "from_port" {
   description = "the ingress from port range"
   default = 8000
@@ -68,6 +96,4 @@ variable "sysdig_access_key" {
   default = "none"
 }
 
-variable "ssh_public_key" {
-  description = "public key to allow ssh to cluster instances"
-}
+*/

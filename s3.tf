@@ -1,61 +1,26 @@
-resource "aws_s3_bucket" "ecs_config" {
-    bucket = "${var.vpc}-ecs-config"
-    acl = "private"
+resource "aws_s3_bucket" "config" {
+  bucket = "${local.namespace}-ecs-config"
+  acl = "private"
 
-    tags {
-        Name = "${var.vpc}-ecs-config"
-    }
-}
-
-// https://aws.amazon.com/blogs/compute/optimizing-disk-usage-on-amazon-ecs/
-resource "aws_s3_bucket_object" "ecs_config" {
-    bucket = "${aws_s3_bucket.ecs_config.id}"
-    key = "ecs.config"
-    content = <<EOF
-ECS_CLUSTER=${aws_ecs_cluster.cluster.name}
-ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=10m
-EOF
+  tags {
+    Name = "${local.namespace}-ecs-config"
+  }
 }
 
 resource "aws_s3_bucket_object" "awslogs_conf" {
-    bucket = "${aws_s3_bucket.ecs_config.id}"
-    key = "awslogs.conf"
-    content = <<EOF
-[general]
-state_file = /var/lib/awslogs/agent-state
-        
-[/var/log/newrelic/nrsysmond.log] 
-file = /var/log/newrelic/nrsysmond.log
-log_group_name = ${aws_cloudwatch_log_group.cluster.name}
-log_stream_name = {container_instance_id}/var/log/newrelic/nrsysmond.log
+  bucket = "${aws_s3_bucket.config.id}"
+  key = "awslogs.conf"
+  content = "${data.template_file.awslogs_conf.rendered}"
+}
 
-[/var/log/dmesg]
-file = /var/log/dmesg
-log_group_name = ${aws_cloudwatch_log_group.cluster.name}
-log_stream_name = {container_instance_id}/var/log/dmesg
+resource "aws_s3_bucket_object" "ecs_config" {
+  bucket = "${aws_s3_bucket.config.id}"
+  key = "ecs.config"
+  content = "${data.template_file.ecs_config.rendered}"
+}
 
-[/var/log/messages]
-file = /var/log/messages
-log_group_name = ${aws_cloudwatch_log_group.cluster.name}
-log_stream_name = {container_instance_id}/var/log/messages
-datetime_format = %b %d %H:%M:%S
-
-[/var/log/docker]
-file = /var/log/docker
-log_group_name = ${aws_cloudwatch_log_group.cluster.name}
-log_stream_name = {container_instance_id}/var/log/docker
-datetime_format = %Y-%m-%dT%H:%M:%S.%f
-
-[/var/log/ecs/ecs-init.log]
-file = /var/log/ecs/ecs-init.log.*
-log_group_name = ${aws_cloudwatch_log_group.cluster.name}
-log_stream_name = {container_instance_id}/var/log/ecs-init.log
-datetime_format = %Y-%m-%dT%H:%M:%SZ
-
-[/var/log/ecs/ecs-agent.log]
-file = /var/log/ecs/ecs-agent.log.*
-log_group_name = ${aws_cloudwatch_log_group.cluster.name}
-log_stream_name = {container_instance_id}/var/log/ecs-agent.log
-datetime_format = %Y-%m-%dT%H:%M:%SZ
-EOF
+resource "aws_s3_bucket_object" "user_data" {
+  bucket = "${aws_s3_bucket.config.id}"
+  key = "userdata.sh"
+  content = "${data.template_file.user_data.rendered}"
 }

@@ -1,6 +1,14 @@
 output "vpc_id" {
+  description = "the vpc id"
   value = "${aws_vpc.vpc.id}"
 }
+
+output "namespace" {
+  description = "the namespace"
+  value = "${local.namespace}"
+}
+
+/*
 
 output "cluster_id" {
   value = "${aws_ecs_cluster.cluster.id}"
@@ -17,3 +25,4 @@ output "microservice_elb_security_group_id" {
 output "subnets" {
   value = "${join(",", aws_subnet.public.*.id)}"
 }
+*/
