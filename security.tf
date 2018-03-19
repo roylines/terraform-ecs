@@ -25,18 +25,17 @@ resource "aws_iam_policy_attachment" "s3_read_only" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
 
+/* TODO - lock down to cloudfront ranges */
 resource "aws_security_group" "cluster" {
   name = "${local.namespace}-cluster"
   description = "security group used by clustered instances"
   vpc_id = "${aws_vpc.vpc.id}" 
-  /*
   ingress {
-      from_port = 22 
-      to_port = 22
+      from_port = 32768 
+      to_port = 61000
       protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
   }
-  */
   egress {
       from_port = 0
       to_port = 0
