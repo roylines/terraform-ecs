@@ -1,3 +1,12 @@
+resource "aws_route53_zone" "microservices" {
+  name = "${var.name}.${var.environment}"
+  comment = "HostedZone for microservices within ${local.namespace}" 
+  vpc_id = "${aws_vpc.vpc.id}" 
+  tags {
+    Name = "${local.namespace}"
+  }
+}
+
 resource "aws_ecs_cluster" "cluster" {
   name = "${local.namespace}"
 }
